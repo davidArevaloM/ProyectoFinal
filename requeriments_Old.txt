@@ -1,7 +1,0 @@
-neo4j
-pymongo
-streamlit
-plotly==5.7.0
-networkx==2.5
-matplotlib==3.9.0
-numpy==1.24

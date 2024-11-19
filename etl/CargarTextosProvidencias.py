@@ -14,7 +14,7 @@ if "providencias" in db.list_collection_names():
 
 collection = db["providencias"]
 
-directorio = "C:/Users/USER/Downloads/relatoria"
+directorio = "C:/Users/dsant/OneDrive/Documentos/Maestria_Analitica_Datos/Semestre 3/BIG DATA/ProyectoFinal/Output"
 
 # Cargar cada archivo JSON en la colección de MongoDB
 for filename in os.listdir(directorio):

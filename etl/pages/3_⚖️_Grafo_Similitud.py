@@ -9,28 +9,29 @@ import plotly.graph_objects as go
 
 st.set_page_config(
     page_title="Similitud Providencias",
-    page_icon="⚖️",
-)
+    page_icon="⚖️")
 
-# Conectar a la Base de Datos
-@st.cache_data(ttl=3600)
-def consulta():
-    URI = "neo4j+s://ce19c87f.databases.neo4j.io"
-    AUTH = ("neo4j", "GuPlCLhONEe3XnvgkzK6muCSK8WTRU8zZGt8kCzkb8A")
-    #Verifica Conexión con la base de datos
-    with GraphDatabase.driver(URI, auth=AUTH) as driver:
-        driver.verify_connectivity()
-
+def consulta(providencia, similitud):
     # Consultar Información
     records, summary, keys = driver.execute_query(
-        """MATCH (p1:Providencia)-[Similar]->(p2:Providencia)
-        RETURN p1.nombre as Prov_1, p2.nombre as Prov_2, Similar.similitud as Similitud
-        ORDER BY Similitud DESC
-        """,
+        """MATCH (p1:Providencia {nombre: $nombre})-[r:Similar]->(p2:Providencia)
+        WHERE r.similitud >= $similitud
+        RETURN p1.nombre, p2.nombre, r.similitud""",
+        nombre = providencia,
+        similitud = similitud,
         database_="neo4j",
     )
     return pd.DataFrame(records)
 
+# Conectar a la Base de Datos
+URI = "neo4j+s://ce19c87f.databases.neo4j.io"
+AUTH = ("neo4j", "GuPlCLhONEe3XnvgkzK6muCSK8WTRU8zZGt8kCzkb8A")
+
+#Verifica Conexión con la base de datos
+with GraphDatabase.driver(URI, auth=AUTH) as driver:
+    driver.verify_connectivity()
+
+#Barra Lateral
 with st.sidebar:
     providencia = st.text_input("Ingrese la providencia a consultar",
                                placeholder = "Ingrese la providencia a consultar")
@@ -41,14 +42,14 @@ with st.sidebar:
                                value = 0.00)
 
 
-# Crear y Filtrar el DataFrame
-df = consulta()
-df.columns = ['Providencia1', 'Providencia2', 'Similitud']
-df = df[(df['Providencia1'] == providencia) & (df['Similitud'] >= similitud)]
+# Crear el DataFrame
+df = consulta(providencia, similitud)
 
+#Titulo de la página
 st.title('Providencias con Mayor Similitud')
 
 if not df.empty:
+    df.columns = ['Providencia1', 'Providencia2', 'Similitud']
     st.write(f'A continuación es posible observar el grafo de las {len(df)} providencias con mayor similitud a la providencia {providencia}. Al igual que el listado correspondiente ordenado de mayor a menor')
     # Crear un grafo vacío
     G = nx.Graph()
@@ -148,7 +149,7 @@ if not df.empty:
 
     st.markdown("#### Listado de providencias con mayor similitud.")
     # Mostrar el DataFrame
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(df.sort_values('Similitud', ascending=False), use_container_width=True)
 
 else:
     st.markdown('## Ingrese la providencia que desea consultar junto con el valor de similitud de referencia')
