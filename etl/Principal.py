@@ -14,13 +14,13 @@ st.markdown("""1. El uso de librerias como dask o Spark permiten optimizar la ej
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    st.image("images\dask.jpeg", width=100)
+    st.image("images\\dask.jpeg", width=100)
 with col2:
-    st.image("images\Mongo2.jpeg", width=100)
+    st.image("images\\Mongo2.jpeg", width=100)
 with col3:
-    st.image("images\eo4j.jpeg", width=100)
+    st.image("images\\eo4j.jpeg", width=100)
 with col4:
-    st.image("images\Streamlit.jpeg", width=100)
+    st.image("images\\Streamlit.jpeg", width=100)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
