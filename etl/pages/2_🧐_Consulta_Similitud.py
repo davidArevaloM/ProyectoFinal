@@ -13,7 +13,8 @@ st.write('En esta sección podra realizar la consulta de la similitud de una pro
 def consulta(providencia):
     # Consultar Información
     records, summary, keys = driver.execute_query(
-        """MATCH (p1:Providencia {nombre: $nombre})-[r:Similar]->(p2:Providencia)
+        """MATCH (p1:Providencia)-[r:Similar]->(p2:Providencia)
+        WHERE p1.nombre = $nombre OR p2.nombre = $nombre
         RETURN p1.nombre, p2.nombre, r.similitud""",
         nombre=providencia,
         database_="neo4j",
