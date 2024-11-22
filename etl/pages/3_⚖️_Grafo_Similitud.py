@@ -14,8 +14,8 @@ st.set_page_config(
 def consulta(providencia, similitud):
     # Consultar Información
     records, summary, keys = driver.execute_query(
-        """MATCH (p1:Providencia {nombre: $nombre})-[r:Similar]->(p2:Providencia)
-        WHERE r.similitud >= $similitud
+        """MATCH (p1:Providencia {nombre: $nombre})-[r:Similar]->(p2:Providencia{nombre: $nombre})
+        WHERE r.similitud >= $similitud 
         RETURN p1.nombre, p2.nombre, r.similitud""",
         nombre = providencia,
         similitud = similitud,
