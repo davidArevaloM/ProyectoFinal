@@ -14,8 +14,8 @@ st.set_page_config(
 def consulta(providencia, similitud):
     # Consultar Información
     records, summary, keys = driver.execute_query(
-        """MATCH (p1:Providencia {nombre: $nombre})-[r:Similar]->(p2:Providencia)
-        WHERE r.similitud >= $similitud
+        """MATCH (p1:Providencia)-[r:Similar]->(p2:Providencia)
+        WHERE r.similitud >= $similitud AND (p1.nombre = $nombre OR p2.nombre = $nombre)
         RETURN p1.nombre, p2.nombre, r.similitud""",
         nombre = providencia,
         similitud = similitud,
@@ -48,6 +48,7 @@ df = consulta(providencia, similitud)
 #Titulo de la página
 st.title('Providencias con Mayor Similitud')
 
+#Creación del grafo
 if not df.empty:
     df.columns = ['Providencia1', 'Providencia2', 'Similitud']
     st.write(f'A continuación es posible observar el grafo de las {len(df)} providencias con mayor similitud a la providencia {providencia}. Al igual que el listado correspondiente ordenado de mayor a menor')
@@ -60,9 +61,8 @@ if not df.empty:
         destino = row['Providencia2']
         similitud = row['Similitud']
         
-        # Agregar arista si la similitud es mayor a un umbral
-        if similitud > 0.5:
-            G.add_edge(origen, destino, weight=similitud)
+        # Agregar relación 
+        G.add_edge(origen, destino, weight=similitud)
 
     # Obtener posiciones para cada nodo
     pos = nx.spring_layout(G)
